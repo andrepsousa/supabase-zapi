@@ -105,7 +105,7 @@ docker run --env-file .env supabase-zapi
 
 ## 🔎 Testes & Qualidade
 ```bash
-python -m pip install -r requirements.txt -r requirements-dev.txt
+python -m pip install -r requirements.txt
 pytest --cov=src -q
 flake8 src tests --max-line-length=88
 ```
