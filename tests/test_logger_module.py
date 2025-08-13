@@ -1,5 +1,4 @@
 import logging
-import os
 from src.utils.logger import get_logger
 
 

@@ -1,6 +1,3 @@
-import types
-import pytest
-
 from src.services import supabase_client as sc
 
 
