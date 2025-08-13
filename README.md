@@ -28,10 +28,8 @@ postman_collection.json
 Dockerfile
 .github/workflows/ci.yml
 requirements.txt
-requirements-api.txt  # opcional p/ rodar Swagger UI
-requirements-dev.txt  # (novo) libs de dev/test
-pytest.ini            # (novo) silencia warnings e define addopts
-setup.cfg             # (novo) flake8 config
+pytest.ini            # silencia warnings e define addopts
+setup.cfg             # flake8 config
 .env.example
 ```
 
