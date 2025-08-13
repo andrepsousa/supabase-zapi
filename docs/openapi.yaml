@@ -1,0 +1,130 @@
+openapi: 3.0.3
+info:
+  title: Supabase → Z-API (Documentação)
+  version: "1.0.0"
+  description: |
+    Documentação do fluxo de envio de WhatsApp:
+    - Busca contatos ativos no Supabase
+    - Envia mensagem personalizada via Z-API
+
+servers:
+  - url: http://localhost  # apenas ilustrativo
+
+paths:
+  /contacts:
+    get:
+      summary: Listar contatos ativos (fonte: Supabase)
+      description: |
+        Equivalente ao que `fetch_contacts(limit)` faz no código.
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, default: 3 }
+          description: Número máximo de contatos
+      responses:
+        "200":
+          description: Contatos retornados
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Contact"
+              examples:
+                exemplo:
+                  value:
+                    count: 3
+                    items:
+                      - id: "1206b580-ea..."
+                        name: "Breno"
+                        phone: "5518996628576"
+                        active: true
+                      - id: "a839c618-95e..."
+                        name: "Washington"
+                        phone: "5511948054059"
+                        active: true
+
+  /send:
+    post:
+      summary: Disparar envio de mensagens
+      description: |
+        Para cada contato retornado do Supabase, envia
+        **"Olá {nome}, tudo bem com você?"** via Z-API.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                limit:
+                  type: integer
+                  description: Número de contatos a enviar
+                  default: 3
+      responses:
+        "200":
+          description: Resultado do disparo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SendResponse"
+              examples:
+                sucesso:
+                  value:
+                    sent: 3
+                    failed: 0
+                    results:
+                      - id: "a839c618-95e..."
+                        name: "Washington"
+                        phone: "5511948054059"
+                        ok: true
+                        status: 200
+                      - id: "1206b580-ea..."
+                        name: "Breno"
+                        phone: "5518996628576"
+                        ok: true
+                        status: 200
+
+components:
+  schemas:
+    Contact:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        phone: { type: string, description: "Somente dígitos (E.164 sem '+')" }
+        active: { type: boolean }
+      required: [name, phone]
+
+    SendItem:
+      type: object
+      properties:
+        id: { type: string, nullable: true }
+        name: { type: string }
+        phone: { type: string }
+        ok: { type: boolean }
+        status: { type: integer, nullable: true }
+        error: { type: string, nullable: true }
+
+    SendResponse:
+      type: object
+      properties:
+        sent: { type: integer }
+        failed: { type: integer }
+        results:
+          type: array
+          items: { $ref: "#/components/schemas/SendItem" }
+
+  securitySchemes:
+    ZapiClientToken:
+      type: apiKey
+      in: header
+      name: Client-Token
+      description: Token configurado na aba Segurança da Z-API
+
+security:
+  - ZapiClientToken: []
