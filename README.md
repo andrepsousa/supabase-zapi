@@ -146,10 +146,10 @@ Importe `postman_collection.json` e preencha as variáveis:
 ## Demonstração
 
 ### 1. Estrutura da tabela (Supabase)
-![Schema](docs/supabase_schema.png)
+![Schema](docs/supabase-schema.jpeg)
 
 ### 2. Registros (Supabase)
-![Dados](docs/supabase_table.png)
+![Dados](docs/supabase-table.jpeg)
 
 ### 3. Execução do script
 ![Execução](docs/run_script.png)
