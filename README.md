@@ -2,7 +2,7 @@
 # Supabase → Z-API · Envio de WhatsApp em Python
 
 Projeto que lê contatos no **Supabase** e envia, via **Z-API**, a mensagem **"Olá {nome}, tudo bem com você?"** para N contatos (padrão 3).  
-Inclui **logs estruturados**, **testes unitários**, **Docker**, **CI (GitHub Actions)**, **Postman Collection** e **Swagger (OpenAPI)** para documentação.
+Inclui **logs estruturados**, **testes unitários**, **Docker**, **CI (GitHub Actions)** e **Swagger (OpenAPI)** para documentação.
 
 ---
 
@@ -24,7 +24,6 @@ src/
   main.py             # fluxo CLI: Supabase → Z-API
 tests/                # pytest + respx
 docs/openapi.yaml     # documentação OpenAPI (Swagger)
-postman_collection.json
 Dockerfile
 .github/workflows/ci.yml
 requirements.txt
@@ -123,13 +122,6 @@ A especificação OpenAPI está em `docs/openapi.yaml`.
 Visualizar:
 1. Acesse https://editor.swagger.io/
 2. `File → Import File` → selecione `docs/openapi.yaml`
-
----
-
-## 🧪 Postman
-Importe `postman_collection.json` e preencha as variáveis:
-- `ZAPI_SEND_URL`
-- `ZAPI_CLIENT_TOKEN`
 
 ---
 
