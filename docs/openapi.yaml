@@ -1,130 +1,133 @@
 openapi: 3.0.3
 info:
-  title: Supabase → Z-API (Documentação)
+  title: Supabase → Z-API (Docs)
   version: "1.0.0"
   description: |
-    Documentação do fluxo de envio de WhatsApp:
-    - Busca contatos ativos no Supabase
+    Documentação ilustrativa do fluxo:
+    - Lê contatos ativos no Supabase
     - Envia mensagem personalizada via Z-API
 
 servers:
-  - url: http://localhost  # apenas ilustrativo
+  - url: http://localhost
+    description: "Somente ilustrativo (não há servidor HTTP neste projeto)"
 
 paths:
   /contacts:
     get:
-      summary: Listar contatos ativos (fonte: Supabase)
-      description: |
-        Equivalente ao que `fetch_contacts(limit)` faz no código.
+      summary: "Listar contatos ativos (Supabase)"
+      description: >
+        Este endpoint é apenas documentação do que o script faz ao consultar o Supabase.
+        Não existe rota HTTP no projeto; isto é uma representação.
       parameters:
         - in: query
           name: limit
-          schema: { type: integer, minimum: 1, default: 3 }
-          description: Número máximo de contatos
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 3
+          description: "Número máximo de contatos"
       responses:
         "200":
-          description: Contatos retornados
+          description: "Contatos retornados"
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  count: { type: integer }
-                  items:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Contact"
+                $ref: "#/components/schemas/ContactsResponse"
               examples:
-                exemplo:
+                demo:
                   value:
                     count: 3
                     items:
-                      - id: "1206b580-ea..."
+                      - id: "1206b580-aaaa-bbbb-cccc-111111111111"
                         name: "Breno"
                         phone: "5518996628576"
                         active: true
-                      - id: "a839c618-95e..."
+                      - id: "a389c618-aaaa-bbbb-cccc-222222222222"
                         name: "Washington"
                         phone: "5511948054059"
                         active: true
+                      - id: "dba0426c-aaaa-bbbb-cccc-333333333333"
+                        name: "Carla"
+                        phone: "5581999999999"
+                        active: true
 
-  /send:
+  /send-message:
     post:
-      summary: Disparar envio de mensagens
-      description: |
-        Para cada contato retornado do Supabase, envia
-        **"Olá {nome}, tudo bem com você?"** via Z-API.
+      summary: "Enviar mensagem via Z-API"
+      description: >
+        Documenta a chamada que o script faz para a Z-API usando o header `Client-Token`.
+        Representação apenas para fins de documentação.
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                limit:
-                  type: integer
-                  description: Número de contatos a enviar
-                  default: 3
+              $ref: "#/components/schemas/SendMessageRequest"
+            examples:
+              demo:
+                value:
+                  phone: "5511999999999"
+                  message: "Ola Breno, tudo bem com voce?"
       responses:
         "200":
-          description: Resultado do disparo
+          description: "Resposta encaminhada da Z-API"
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SendResponse"
-              examples:
-                sucesso:
-                  value:
-                    sent: 3
-                    failed: 0
-                    results:
-                      - id: "a839c618-95e..."
-                        name: "Washington"
-                        phone: "5511948054059"
-                        ok: true
-                        status: 200
-                      - id: "1206b580-ea..."
-                        name: "Breno"
-                        phone: "5518996628576"
-                        ok: true
-                        status: 200
+                $ref: "#/components/schemas/SendMessageResponse"
+        "400":
+          description: "Payload invalido ou token ausente"
 
 components:
   schemas:
     Contact:
       type: object
+      required: [id, name, phone, active]
       properties:
-        id: { type: string, format: uuid }
-        name: { type: string }
-        phone: { type: string, description: "Somente dígitos (E.164 sem '+')" }
-        active: { type: boolean }
-      required: [name, phone]
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        phone:
+          type: string
+          description: "Numero E.164 apenas digitos (ex.: 5511999999999)"
+        active:
+          type: boolean
 
-    SendItem:
+    ContactsResponse:
       type: object
       properties:
-        id: { type: string, nullable: true }
-        name: { type: string }
-        phone: { type: string }
-        ok: { type: boolean }
-        status: { type: integer, nullable: true }
-        error: { type: string, nullable: true }
-
-    SendResponse:
-      type: object
-      properties:
-        sent: { type: integer }
-        failed: { type: integer }
-        results:
+        count:
+          type: integer
+        items:
           type: array
-          items: { $ref: "#/components/schemas/SendItem" }
+          items:
+            $ref: "#/components/schemas/Contact"
 
-  securitySchemes:
-    ZapiClientToken:
-      type: apiKey
-      in: header
-      name: Client-Token
-      description: Token configurado na aba Segurança da Z-API
+    SendMessageRequest:
+      type: object
+      required: [phone, message]
+      properties:
+        phone:
+          type: string
+          example: "5511999999999"
+        message:
+          type: string
+          example: "Ola Breno, tudo bem com voce?"
 
-security:
-  - ZapiClientToken: []
+    SendMessageResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        status:
+          type: integer
+          example: 200
+        data:
+          type: object
+          nullable: true
+          example:
+            messageId: "abcd-1234"
